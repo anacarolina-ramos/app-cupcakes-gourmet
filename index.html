@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doceria Gourmet - App de Cupcakes</title>
+    <style>
+        :root {
+            --primary: #e91e63;
+            --secondary: #8e24aa;
+            --bg: #fce4ec;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; }
+
+        header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        
+        nav { display: flex; justify-content: space-around; background: white; padding: 10px 0; border-bottom: 1px solid #ddd; }
+        nav button { background: none; border: none; font-weight: bold; color: var(--secondary); cursor: pointer; padding: 8px 12px; border-radius: 20px; }
+        nav button.active { background-color: var(--primary); color: white; }
+
+        .container { max-width: 500px; margin: 15px auto; padding: 0 15px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Vitrine */
+        .search-bar { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; }
+        .card h4 { font-size: 15px; margin: 8px 0 4px; }
+        .card p { color: #666; font-size: 12px; margin-bottom: 8px; }
+        .card .price { color: var(--primary); font-weight: bold; font-size: 14px; }
+        .card button { background-color: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 6px; }
+
+        /* Carrinho */
+        .cart-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        .btn-qty { background: #eee; border: none; padding: 4px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
+
+        .btn-primary { background: var(--primary); color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        
+        .pix-box { background: #e8f5e9; border: 1px dashed #2e7d32; padding: 15px; border-radius: 8px; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h3>🧁 Cupcake Gourmet</h3>
+    </header>
+
+    <nav>
+        <button class="active" onclick="switchTab('vitrine', this)">Vitrine</button>
+        <button onclick="switchTab('carrinho', this)">Carrinho (<span id="cart-count">0</span>)</button>
+        <button onclick="switchTab('admin', this)">Painel Loja</button>
+        <button onclick="switchTab('entregador', this)">Entregador</button>
+    </nav>
+
+    <div class="container">
+        <!-- VITRINE (US01, US08) -->
+        <div id="vitrine" class="tab-content active">
+            <input type="text" class="search-bar" placeholder="Buscar sabor (ex: Sem Açúcar, Red Velvet)..." onkeyup="filterCupcakes(this.value)">
+            <div class="grid" id="cupcake-list"></div>
+        </div>
+
+        <!-- CARRINHO & CHECKOUT (US02, US03, US05, US10) -->
+        <div id="carrinho" class="tab-content">
+            <h3>Seu Carrinho</h3>
+            <div id="cart-items" style="margin-top: 15px;"></div>
+            <h4 style="text-align: right; margin-top: 10px;">Total: R$ <span id="cart-total">0.00</span></h4>
+
+            <div style="margin-top: 20px; background: white; padding: 15px; border-radius: 8px;">
+                <h4>Dados de Entrega & Pagamento</h4>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>Endereço Completo (US05)</label>
+                    <input type="text" id="address" placeholder="Rua, Número, Bairro">
+                </div>
+                <div class="form-group">
+                    <label>Forma de Pagamento (US03)</label>
+                    <select id="payment-method" onchange="togglePayment(this.value)">
+                        <option value="pix">PIX (Instantâneo)</option>
+                        <option value="cartao">Cartão de Crédito/Débito</option>
+                    </select>
+                </div>
+
+                <div id="pix-area" class="pix-box">
+                    <p>Chave PIX Copia e Cola:</p>
+                    <code id="pix-code">00020126580014BR.GOV.BCB.PIX0114doceriagourmet123520400005303986540515.005802BR5915CupcakeGourmet6009SaoPaulo62070503***6304E2CA</code>
+                    <button class="btn-primary" style="background: #2e7d32; font-size: 12px; padding: 6px; margin-top: 8px;" onclick="copyPix()">Copiar Código PIX</button>
+                </div>
+
+                <button class="btn-primary" onclick="checkout()">Finalizar Pedido</button>
+            </div>
+            
+            <div id="order-status" style="display:none; margin-top: 15px; background: #fff3cd; padding: 10px; border-radius: 8px; text-align: center;">
+                ⏳ Status do Pedido: <b id="status-text">Em Preparação (US06)</b>
+            </div>
+        </div>
+
+        <!-- PAINEL DA LOJA (US04, US09, US11, US13) -->
+        <div id="admin" class="tab-content">
+            <h3>Gestão do Estabelecimento</h3>
+            <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                <h4>Cadastrar Novo Sabores (US04)</h4>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>Nome do Cupcake</label>
+                    <input type="text" id="new-name" placeholder="Ex: Nutella com Ninho">
+                </div>
+                <div class="form-group">
+                    <label>Preço (R$)</label>
+                    <input type="number" id="new-price" placeholder="12.50">
+                </div>
+                <button class="btn-primary" onclick="addCupcake()">Adicionar Produto</button>
+            </div>
+
+            <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <h4>Relatório Simplificado (US13)</h4>
+                <p style="margin-top: 5px;">Vendas Totais Hoje: <b>R$ 185,00</b></p>
+                <p>Pedidos Concluídos: <b>12</b></p>
+            </div>
+        </div>
+
+        <!-- PAINEL DO ENTREGADOR (US07, US14) -->
+        <div id="entregador" class="tab-content">
+            <h3>Área do Entregador</h3>
+            <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                <h4>Pedido #1042 (US07)</h4>
+                <p><b>Cliente:</b> Ana Ramos</p>
+                <p><b>Endereço:</b> Av. Portugal, 450 - Santo André</p>
+                <p><b>Itens:</b> 2x Red Velvet, 1x Sem Açúcar</p>
+                <button class="btn-primary" style="background: #1976d2;" onclick="alert('Status alterado para ENTREGUE com sucesso! (US14)')">Marcar como Entregue (US14)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cupcakes = [
+            { id: 1, name: "Red Velvet Premium", price: 12.00, tag: "Mais Vendido", img: "https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?w=300" },
+            { id: 2, name: "Chocolate Belgacom Ninho", price: 14.00, tag: "Tradicional", img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=300" },
+            { id: 3, name: "Morango Zero Açúcar", price: 15.00, tag: "Sem Açúcar", img: "https://images.unsplash.com/photo-1587668178277-295251f900ce?w=300" }
+        ];
+
+        let cart = [];
+
+        function renderCupcakes(items = cupcakes) {
+            const list = document.getElementById('cupcake-list');
+            list.innerHTML = '';
+            items.forEach(c => {
+                list.innerHTML += `
+                    <div class="card">
+                        <img src="${c.img}" alt="${c.name}">
+                        <h4>${c.name}</h4>
+                        <p>${c.tag}</p>
+                        <div class="price">R$ ${c.price.toFixed(2)}</div>
+                        <button onclick="addToCart(${c.id})">+ Adicionar</button>
+                    </div>
+                `;
+            });
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if(btn) btn.classList.add('active');
+        }
+
+        function addToCart(id) {
+            const prod = cupcakes.find(c => c.id === id);
+            const inCart = cart.find(item => item.id === id);
+            if(inCart) {
+                inCart.qty++;
+            } else {
+                cart.push({...prod, qty: 1});
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            document.getElementById('cart-count').innerText = cart.reduce((a, b) => a + b.qty, 0);
+            const cartContainer = document.getElementById('cart-items');
+            cartContainer.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                total += item.price * item.qty;
+                cartContainer.innerHTML += `
+                    <div class="cart-item">
+                        <div>
+                            <b>${item.name}</b><br>
+                            <small>R$ ${item.price.toFixed(2)}</small>
+                        </div>
+                        <div>
+                            <button class="btn-qty" onclick="changeQty(${item.id}, -1)">-</button>
+                            <span style="margin: 0 5px;">${item.qty}</span>
+                            <button class="btn-qty" onclick="changeQty(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('cart-total').innerText = total.toFixed(2);
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if(item) {
+                item.qty += delta;
+                if(item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+            }
+            updateCart();
+        }
+
+        function filterCupcakes(text) {
+            const filtered = cupcakes.filter(c => c.name.toLowerCase().includes(text.toLowerCase()) || c.tag.toLowerCase().includes(text.toLowerCase()));
+            renderCupcakes(filtered);
+        }
+
+        function copyPix() {
+            navigator.clipboard.writeText(document.getElementById('pix-code').innerText);
+            alert("Código PIX copiado com sucesso!");
+        }
+
+        function checkout() {
+            if(cart.length === 0) return alert("Seu carrinho está vazio!");
+            if(!document.getElementById('address').value) return alert("Por favor, informe seu endereço de entrega!");
+            
+            document.getElementById('order-status').style.display = 'block';
+            alert("Pedido recebido pela loja com sucesso! (US09)");
+        }
+
+        function addCupcake() {
+            const name = document.getElementById('new-name').value;
+            const price = parseFloat(document.getElementById('new-price').value);
+            if(name && price) {
+                cupcakes.push({ id: Date.now(), name, price, tag: "Novidade", img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=300" });
+                renderCupcakes();
+                alert("Novo sabor cadastrado com sucesso! (US04)");
+            }
+        }
+
+        renderCupcakes();
+    </script>
+</body>
+</html>
