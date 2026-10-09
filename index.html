@@ -4,85 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doceria Gourmet - App de Cupcakes</title>
-    <style>
-        :root {
-            --primary: #e91e63;
-            --secondary: #8e24aa;
-            --bg: #fce4ec;
-            --card-bg: #ffffff;
-            --text: #333333;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; }
-
-        header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        
-        nav { display: flex; justify-content: space-around; background: white; padding: 10px 0; border-bottom: 1px solid #ddd; }
-        nav button { background: none; border: none; font-weight: bold; color: var(--secondary); cursor: pointer; padding: 8px 12px; border-radius: 20px; }
-        nav button.active { background-color: var(--primary); color: white; }
-
-        .container { max-width: 500px; margin: 15px auto; padding: 0 15px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* Vitrine */
-        .search-bar { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; }
-        .card h4 { font-size: 15px; margin: 8px 0 4px; }
-        .card p { color: #666; font-size: 12px; margin-bottom: 8px; }
-        .card .price { color: var(--primary); font-weight: bold; font-size: 14px; }
-        .card button { background-color: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 6px; }
-
-        /* Carrinho */
-        .cart-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
-        .btn-qty { background: #eee; border: none; padding: 4px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-        
-        .form-group { margin-bottom: 12px; text-align: left; }
-        .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
-
-        .btn-primary { background: var(--primary); color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        
-        .pix-box { background: #e8f5e9; border: 1px dashed #2e7d32; padding: 15px; border-radius: 8px; text-align: center; margin-top: 15px; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <h3>🧁 Cupcake Gourmet</h3>
+        <div class="header-content">
+            <h1>🧁 Cupcake Gourmet</h1>
+            <p>Os melhores cupcakes da cidade ao seu alcance</p>
+        </div>
     </header>
 
     <nav>
-        <button class="active" onclick="switchTab('vitrine', this)">Vitrine</button>
-        <button onclick="switchTab('carrinho', this)">Carrinho (<span id="cart-count">0</span>)</button>
-        <button onclick="switchTab('admin', this)">Painel Loja</button>
-        <button onclick="switchTab('entregador', this)">Entregador</button>
+        <button class="nav-btn active" onclick="switchTab('vitrine', this)">Vitrine</button>
+        <button class="nav-btn" onclick="switchTab('carrinho', this)">Carrinho (<span id="cart-count">0</span>)</button>
+        <button class="nav-btn" onclick="switchTab('admin', this)">Painel Loja</button>
+        <button class="nav-btn" onclick="switchTab('entregador', this)">Entregador</button>
     </nav>
 
-    <div class="container">
+    <main class="container">
         <!-- VITRINE (US01, US08) -->
-        <div id="vitrine" class="tab-content active">
-            <input type="text" class="search-bar" placeholder="Buscar sabor (ex: Churros, Pistache, Sem Açúcar)..." onkeyup="filterCupcakes(this.value)">
+        <section id="vitrine" class="tab-content active">
+            <div class="search-box">
+                <input type="text" class="search-bar" id="search-input" placeholder="Buscar sabor (ex: Churros, Pistache, Sem Açúcar)..." onkeyup="filterCupcakes(this.value)">
+            </div>
             <div class="grid" id="cupcake-list"></div>
-        </div>
+        </section>
 
-        <!-- CARRINHO & CHECKOUT (US02, US03, US05, US10) -->
-        <div id="carrinho" class="tab-content">
-            <h3>Seu Carrinho</h3>
-            <div id="cart-items" style="margin-top: 15px;"></div>
-            <h4 style="text-align: right; margin-top: 10px;">Total: R$ <span id="cart-total">0.00</span></h4>
+        <!-- CARRINHO & CHECKOUT (US02, US03, US05, US10, US12) -->
+        <section id="carrinho" class="tab-content">
+            <h2>Seu Carrinho</h2>
+            <div id="cart-items"></div>
+            <div class="cart-summary">
+                <h3>Total: R$ <span id="cart-total">0.00</span></h3>
+            </div>
 
-            <div style="margin-top: 20px; background: white; padding: 15px; border-radius: 8px;">
-                <h4>Dados de Entrega & Pagamento</h4>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label>Endereço Completo (US05)</label>
-                    <input type="text" id="address" placeholder="Rua, Número, Bairro">
+            <div class="checkout-card">
+                <h3>Dados de Entrega & Pagamento</h3>
+                <div class="form-group">
+                    <label for="address">Endereço Completo (US05)</label>
+                    <input type="text" id="address" placeholder="Rua, Número, Bairro, Cidade">
                 </div>
                 <div class="form-group">
-                    <label>Forma de Pagamento (US03)</label>
+                    <label for="payment-method">Forma de Pagamento (US03)</label>
                     <select id="payment-method">
                         <option value="pix">PIX (Instantâneo)</option>
                         <option value="cartao">Cartão de Crédito/Débito</option>
@@ -91,55 +55,53 @@
 
                 <div id="pix-area" class="pix-box">
                     <p>Chave PIX Copia e Cola:</p>
-                    <code id="pix-code">00020126580014BR.GOV.BCB.PIX0114doceriagourmet123520400005303986540515.005802BR5915CupcakeGourmet6009SaoPaulo62070503***6304E2CA</code>
-                    <button class="btn-primary" style="background: #2e7d32; font-size: 12px; padding: 6px; margin-top: 8px;" onclick="copyPix()">Copiar Código PIX</button>
+                    <code id="pix-code">00020126580014BR.GOV.BCB.PIX0114doceriagourmet123520400005303986540515.005802BR5915CupcakeGourmet6009SaoPaulo</code>
+                    <button class="btn-secondary" onclick="copyPix()">Copiar Código PIX</button>
                 </div>
 
                 <button class="btn-primary" onclick="checkout()">Finalizar Pedido</button>
             </div>
             
-            <div id="order-status" style="display:none; margin-top: 15px; background: #fff3cd; padding: 10px; border-radius: 8px; text-align: center;">
+            <div id="order-status" class="status-box" style="display:none;">
                 ⏳ Status do Pedido: <b id="status-text">Em Preparação (US06)</b>
+                <p id="email-confirmation" class="email-alert"></p>
             </div>
-        </div>
+        </section>
 
         <!-- PAINEL DA LOJA (US04, US09, US11, US13) -->
-        <div id="admin" class="tab-content">
-            <h3>Gestão do Estabelecimento</h3>
-            <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                <h4>Cadastrar Novo Sabor (US04)</h4>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label>Nome do Cupcake</label>
-                    <input type="text" id="new-name" placeholder="Ex: Nutella com Ninho">
+        <section id="admin" class="tab-content">
+            <h2>Gestão do Estabelecimento</h2>
+            <div class="admin-card">
+                <h3>Cadastrar Novo Sabor (US04)</h3>
+                <div class="form-group">
+                    <label for="new-name">Nome do Cupcake</label>
+                    <input type="text" id="new-name" placeholder="Ex: Doce de Leite com Nozes">
                 </div>
                 <div class="form-group">
-                    <label>Preço (R$)</label>
-                    <input type="number" id="new-price" placeholder="12.50">
+                    <label for="new-price">Preço (R$)</label>
+                    <input type="number" step="0.50" id="new-price" placeholder="12.50">
                 </div>
-                <button class="btn-primary" onclick="addCupcake()">Adicionar Produto</button>
+                <div class="form-group">
+                    <label for="new-tag">Categoria/Tag (US08)</label>
+                    <input type="text" id="new-tag" placeholder="Ex: Gourmet, Sem Açúcar, Frutas">
+                </div>
+                <button class="btn-primary" onclick="addCupcake()">Adicionar ao Cardápio</button>
             </div>
 
-            <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                <h4>Relatório Simplificado (US13)</h4>
-                <p style="margin-top: 5px;">Vendas Totais Hoje: <b>R$ 185,00</b></p>
-                <p>Pedidos Concluídos: <b>12</b></p>
+            <div class="admin-card">
+                <h3>Relatório Simplificado de Vendas (US13)</h3>
+                <p>Vendas Totais Registradas: <b>R$ <span id="report-total">185.00</span></b></p>
+                <p>Pedidos Concluídos: <b><span id="report-orders">12</span></b></p>
             </div>
-        </div>
+        </section>
 
         <!-- PAINEL DO ENTREGADOR (US07, US14) -->
-        <div id="entregador" class="tab-content">
-            <h3>Área do Entregador</h3>
-            <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                <h4>Pedido #1042 (US07)</h4>
-                <p><b>Cliente:</b> Ana Ramos</p>
-                <p><b>Endereço:</b> Av. Portugal, 450 - Santo André</p>
-                <p><b>Itens:</b> 2x Red Velvet, 1x Sem Açúcar</p>
-                <button class="btn-primary" style="background: #1976d2;" onclick="alert('Status alterado para ENTREGUE com sucesso! (US14)')">Marcar como Entregue (US14)</button>
-            </div>
-        </div>
-    </div>
+        <section id="entregador" class="tab-content">
+            <h2>Área do Entregador</h2>
+            <div id="delivery-orders"></div>
+        </section>
+    </main>
 
-    <!-- Vinculação do arquivo de script externo em JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
