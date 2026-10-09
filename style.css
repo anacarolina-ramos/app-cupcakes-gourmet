@@ -210,6 +210,17 @@ nav {
     margin: 15px 0;
 }
 
+.pix-box code {
+    display: block;
+    word-break: break-all;
+    font-size: 11px;
+    background: #ffffff;
+    padding: 6px;
+    border-radius: 4px;
+    margin-top: 5px;
+    color: #333;
+}
+
 .status-box {
     background: #fff3cd;
     border: 1px solid #ffeba1;
