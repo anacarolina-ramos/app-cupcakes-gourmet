@@ -44,7 +44,7 @@ function switchTab(tabId, btn) {
     document.getElementById(tabId).classList.add('active');
     if (btn) btn.classList.add('active');
     
-    if(tabId === 'entregador') renderDeliveryOrders();
+    if (tabId === 'entregador') renderDeliveryOrders();
 }
 
 // Carrinho
@@ -172,7 +172,7 @@ function renderDeliveryOrders() {
 
 function updateOrderStatus(id) {
     const order = orders.find(o => o.id === id);
-    if(order) {
+    if (order) {
         order.status = "ENTREGUE";
         saveData();
         renderDeliveryOrders();
