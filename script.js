@@ -4,7 +4,7 @@ const defaultCupcakes = [
     { id: 2, name: "Chocolate Belga e Ninho", price: 14.00, tag: "Tradicional", img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=300" },
     { id: 3, name: "Morango Zero Açúcar", price: 15.00, tag: "Sem Açúcar", img: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=300" },
     { id: 4, name: "Churros Doce de Leite", price: 13.50, tag: "Especial", img: "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=300" },
-    { id: 5, name: "Pistache Supremo", price: 16.00, tag: "Gourmet", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" },
+    { id: 5, name: "Pistache Supremo", price: 16.00, tag: "Gourmet", img: "https://images.unsplash.com/photo-1587668178277-295251f900ce?w=300" },
     { id: 6, name: "Maracujá Azedinho", price: 13.00, tag: "Frutas", img: "https://images.unsplash.com/photo-1519869325930-281384150729?w=300" }
 ];
 
